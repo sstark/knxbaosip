@@ -1,0 +1,11 @@
+{
+  "Result": true,
+  "Service": "GetDescriptionString",
+  "Data": [
+    {
+      "Datapoint": 234,
+      "Description": ""
+    }
+  ]
+}
+

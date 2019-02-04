@@ -1,0 +1,26 @@
+{
+"Result":true,
+"Service":"GetServerItem",
+"Data":
+{
+"HardwareType":[0, 0, 197, 7, 0, 6],
+"HardwareVersion":16,
+"FirmwareVersion":51,
+"KnxManufacturerCodeDev":197,
+"KnxManufacturerCodeApp":197,
+"ApplicationId":1801,
+"ApplicationVersion":16,
+"SerialNumber":[0, 197, 1, 1, 116, 84],
+"TimeSinceReset":329460630,
+"BusConnectionState":1,
+"MaximalBufferSize":512,
+"LengthOfDescriptionString":32,
+"Baudrate":2,
+"CurrentBufferSize":512,
+"ProgrammingMode":0,
+"ProtocolVersion":32,
+"IndicationSending":1,
+"ProtocolVersionWebServices":32
+}
+}
+

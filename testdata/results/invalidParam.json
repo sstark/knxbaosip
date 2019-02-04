@@ -1,0 +1,5 @@
+{
+  "Result": false,
+  "Service": "GetDatapointValue",
+  "Error": "InvalidParam"
+}
