@@ -10,8 +10,8 @@ func main() {
 	si := knx.GetServerItem()
 	fmt.Printf("firmware %d, serialnumber %v\n", si.FirmwareVersion, si.SerialNumber)
 
-	dpd := knx.GetDatapointDescription(711)
+	dpd := knx.GetDatapointDescription([]int{700, 701, 711, 712, 720, 721, 722})
 	fmt.Printf("%+v\n", dpd)
 
-	println(knx.JsonGetDescriptionString(711))
+	//	println(knx.JsonGetDescriptionString(711))
 }

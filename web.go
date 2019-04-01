@@ -100,9 +100,11 @@ func (a *Client) GetServerItem() JsonServerItem {
 	return m
 }
 
-func (a *Client) JsonGetDatapointDescription(datapoint int) JsonResult {
+// JsonGetDatapointDescription fetches <count> consecutive datapoints from the server
+// and returns the raw json data.
+func (a *Client) JsonGetDatapointDescription(datapoint int, count int) JsonResult {
 	var m JsonResult
-	j := []byte(a.ApiGetJson(fmt.Sprintf("getDatapointDescription?DatapointStart=%d&DatapointCount=1", datapoint)))
+	j := []byte(a.ApiGetJson(fmt.Sprintf("getDatapointDescription?DatapointStart=%d&DatapointCount=%d", datapoint, count)))
 	err := json.Unmarshal(j, &m)
 	if err != nil {
 		log.Fatal(err)
@@ -110,11 +112,16 @@ func (a *Client) JsonGetDatapointDescription(datapoint int) JsonResult {
 	return m
 }
 
-func (a *Client) GetDatapointDescription(datapoint int) []JsonDatapointDescription {
-	var m []JsonDatapointDescription
-	err := json.Unmarshal(a.JsonGetDatapointDescription(datapoint).Data, &m)
-	if err != nil {
-		log.Fatal(err)
+// GetDatapointDescription takes a list of datapoints and tries to fetch them with as little
+// calls to JsonGetDatapointDescription as possible.
+func (a *Client) GetDatapointDescription(datapoints []int) []JsonDatapointDescription {
+	var m, t []JsonDatapointDescription
+	for _, chunk := range makeChunks(datapoints) {
+		err := json.Unmarshal(a.JsonGetDatapointDescription(chunk[0], chunk[1]).Data, &t)
+		if err != nil {
+			log.Fatal(err)
+		}
+		m = append(m, t...)
 	}
 	return m
 }
