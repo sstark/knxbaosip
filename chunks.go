@@ -1,7 +1,7 @@
 package main
 
 // makeChunks compresses a list of integers to a list of consecutive chunks
-// ({base,count} of consecutive elements)
+// ({base,count} of consecutive elements).
 func makeChunks(l []int) [][]int {
 	var cl [][]int
 	var count, last int
