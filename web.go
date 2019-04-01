@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	defaultUrl         string = "http://localhost:8888/baos"
+	defaultUrl         string = "http://localhost:8888/baos/"
 	GetServerItemCount int    = 18
 )
 
@@ -68,7 +68,6 @@ func NewClient(url string) *Client {
 
 func (a *Client) ApiGetJson(serviceQuery string) string {
 	getPath := fmt.Sprintf("%s%s", a.Url, serviceQuery)
-	fmt.Println(getPath)
 	res, err := http.Get(getPath)
 	if err != nil {
 		log.Fatal(err)

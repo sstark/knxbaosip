@@ -5,13 +5,14 @@ import (
 )
 
 func main() {
-	knx := NewClient("http://localhost:8888/baos/")
-
+	knx := NewClient("")
 	si := knx.GetServerItem()
-	fmt.Printf("firmware %d, serialnumber %v\n", si.FirmwareVersion, si.SerialNumber)
+	fmt.Printf("%s fw:%d sn:%v\n", knx.Url, si.FirmwareVersion, si.SerialNumber)
 
 	dpd := knx.GetDatapointDescription([]int{700, 701, 711, 712, 720, 721, 722})
-	fmt.Printf("%+v\n", dpd)
+	for _, d := range dpd {
+		fmt.Printf("%d:%d\n", d.Datapoint, d.DatapointType)
+	}
 
 	//	println(knx.JsonGetDescriptionString(711))
 }
