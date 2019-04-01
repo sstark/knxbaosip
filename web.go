@@ -44,6 +44,18 @@ type JsonServerItem struct {
 	ProtocolVersionWebServices int
 }
 
+type JsonDatapointDescription struct {
+	Datapoint          int
+	ValueType          int
+	ConfigurationFlags int
+	DatapointType      int
+}
+
+type JsonDescriptionString struct {
+	Datapoint   int
+	Description string
+}
+
 func NewClient(url string) *Client {
 	var apiUrl string
 	if url == "" {
@@ -88,8 +100,23 @@ func (a *Client) GetServerItem() JsonServerItem {
 	return m
 }
 
-func (a *Client) JsonGetDataPointDescription(datapoint int) string {
-	return a.ApiGetJson(fmt.Sprintf("getDatapointDescription?DatapointStart=%d&DatapointCount=1", datapoint))
+func (a *Client) JsonGetDatapointDescription(datapoint int) JsonResult {
+	var m JsonResult
+	j := []byte(a.ApiGetJson(fmt.Sprintf("getDatapointDescription?DatapointStart=%d&DatapointCount=1", datapoint)))
+	err := json.Unmarshal(j, &m)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return m
+}
+
+func (a *Client) GetDatapointDescription(datapoint int) []JsonDatapointDescription {
+	var m []JsonDatapointDescription
+	err := json.Unmarshal(a.JsonGetDatapointDescription(datapoint).Data, &m)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return m
 }
 
 func (a *Client) JsonGetDescriptionString(datapoint int) string {
