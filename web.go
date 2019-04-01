@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -14,6 +15,12 @@ const (
 
 type Client struct {
 	Url string
+}
+
+type JsonResult struct {
+	Result  bool
+	Service string
+	Data    interface{}
 }
 
 func NewClient(url string) *Client {
@@ -41,8 +48,14 @@ func (a *Client) ApiGetJson(serviceQuery string) string {
 	return string(result)
 }
 
-func (a *Client) JsonGetServerItem() string {
-	return a.ApiGetJson(fmt.Sprintf("getServerItem?ItemStart=1&ItemCount=%d", GetServerItemCount))
+func (a *Client) JsonGetServerItem() JsonResult {
+	var m JsonResult
+	j := []byte(a.ApiGetJson(fmt.Sprintf("getServerItem?ItemStart=1&ItemCount=%d", GetServerItemCount)))
+	err := json.Unmarshal(j, &m)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return m
 }
 
 func (a *Client) JsonGetDataPointDescription(datapoint int) string {
