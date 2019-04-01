@@ -1,4 +1,4 @@
-package knxbaosip
+package main
 
 import (
 	"fmt"
@@ -8,7 +8,8 @@ import (
 )
 
 const (
-	defaultUrl string = "http://localhost:8888/baos"
+	defaultUrl         string = "http://localhost:8888/baos"
+	GetServerItemCount int    = 18
 )
 
 type Client struct {
@@ -25,17 +26,20 @@ func NewClient(url string) *Client {
 	return &Client{Url: apiUrl}
 }
 
-func (a *Client) JsonGetServerItem() string {
-	getPath := a.Url + "getServerItem"
-	fmt.Println(getPath)
+func (a *Client) ApiGetJSON(service string, count int) string {
+	getPath := fmt.Sprintf("%s%s?ItemStart=1&ItemCount=%d", a.Url, service, count)
 	res, err := http.Get(getPath)
 	if err != nil {
 		log.Fatal(err)
 	}
-	greeting, err := ioutil.ReadAll(res.Body)
+	result, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
-	return string(greeting)
+	return string(result)
+}
+
+func (a *Client) JsonGetServerItem() string {
+	return a.ApiGetJSON("getServerItem", 18)
 }

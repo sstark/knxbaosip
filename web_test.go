@@ -1,4 +1,4 @@
-package knxbaosip
+package main
 
 import (
 	"fmt"
