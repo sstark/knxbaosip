@@ -26,8 +26,9 @@ func NewClient(url string) *Client {
 	return &Client{Url: apiUrl}
 }
 
-func (a *Client) ApiGetJSON(service string, count int) string {
-	getPath := fmt.Sprintf("%s%s?ItemStart=1&ItemCount=%d", a.Url, service, count)
+func (a *Client) ApiGetJson(serviceQuery string) string {
+	getPath := fmt.Sprintf("%s%s", a.Url, serviceQuery)
+	fmt.Println(getPath)
 	res, err := http.Get(getPath)
 	if err != nil {
 		log.Fatal(err)
@@ -41,5 +42,13 @@ func (a *Client) ApiGetJSON(service string, count int) string {
 }
 
 func (a *Client) JsonGetServerItem() string {
-	return a.ApiGetJSON("getServerItem", 18)
+	return a.ApiGetJson(fmt.Sprintf("getServerItem?ItemStart=1&ItemCount=%d", GetServerItemCount))
+}
+
+func (a *Client) JsonGetDataPointDescription(datapoint int) string {
+	return a.ApiGetJson(fmt.Sprintf("getDatapointDescription?DatapointStart=%d&DatapointCount=1", datapoint))
+}
+
+func (a *Client) JsonGetDescriptionString(datapoint int) string {
+	return a.ApiGetJson(fmt.Sprintf("getDescriptionString?DatapointStart=%d&DatapointCount=1", datapoint))
 }
