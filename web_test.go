@@ -13,6 +13,7 @@ var ApiTestUrlMap = map[string]string{
 	"/baos/getServerItem?ItemStart=1&ItemCount=18":                     "testdata/results/getServerItem.json",
 	"/baos/getDatapointDescription?DatapointStart=1&DatapointCount=33": "testdata/results/getDataPointDescription-1-33.json",
 	"/baos/getDescriptionString?DatapointStart=1&DatapointCount=33":    "testdata/results/getDescriptionString-1-33.json",
+	"/baos/getDescriptionString?DatapointStart=543&DatapointCount=3":   "testdata/results/invalidParam.json",
 }
 
 func makeTestServer() *httptest.Server {
@@ -62,6 +63,17 @@ func TestGetDescriptionString(t *testing.T) {
 	_, ds := knx.GetDescriptionString(dps)
 	got := ds[10].Description
 	wanted := "Jalo. N4.015 Auf/Ab"
+	if got != wanted {
+		t.Errorf("got %s, wanted %s", got, wanted)
+	}
+}
+
+func TestGetDescriptionStringInvalidParam(t *testing.T) {
+	tearDown, knx := setup(t)
+	defer tearDown(t)
+	_, ds := knx.JsonGetDescriptionString(543, 3)
+	got := ds.Error
+	wanted := "InvalidParam"
 	if got != wanted {
 		t.Errorf("got %s, wanted %s", got, wanted)
 	}
