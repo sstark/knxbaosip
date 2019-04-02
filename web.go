@@ -1,4 +1,4 @@
-package main
+package knxbaosip
 
 import (
 	"encoding/json"
@@ -65,6 +65,8 @@ type JsonDatapointValue struct {
 	Value json.RawMessage
 }
 
+// NewClient creates a new client object using the given URL to access the knx
+// baos ip gateway.
 func NewClient(url string) *Client {
 	var apiUrl string
 	if url == "" {
@@ -75,6 +77,8 @@ func NewClient(url string) *Client {
 	return &Client{Url: apiUrl}
 }
 
+// ApiGetJson queries the baos gateway with a given service query and returns
+// the result as a string
 func (a *Client) ApiGetJson(serviceQuery string) (error, string) {
 	getPath := fmt.Sprintf("%s%s", a.Url, serviceQuery)
 	res, err := http.Get(getPath)
@@ -89,6 +93,8 @@ func (a *Client) ApiGetJson(serviceQuery string) (error, string) {
 	return nil, string(result)
 }
 
+// JsonGetServerItem returns some basic gateway information as a generic json
+// result object
 func (a *Client) JsonGetServerItem() (error, JsonResult) {
 	var m JsonResult
 	var err error
@@ -108,6 +114,8 @@ func (a *Client) JsonGetServerItem() (error, JsonResult) {
 	return nil, m
 }
 
+// GetServerItem returns some basic gateway information as a specific
+// result object
 func (a *Client) GetServerItem() (error, JsonServerItem) {
 	var t JsonResult
 	var m JsonServerItem
@@ -207,6 +215,8 @@ func (a *Client) GetDescriptionString(datapoints []int) (error, []JsonDescriptio
 	return nil, m
 }
 
+// JsonGetDatapointValue fetches <count> consecutive datapoints from the server
+// and returns the raw json data.
 func (a *Client) JsonGetDatapointValue(datapoint int, count int) (error, JsonResult) {
 	var m JsonResult
 	var err error
@@ -226,6 +236,9 @@ func (a *Client) JsonGetDatapointValue(datapoint int, count int) (error, JsonRes
 	return nil, m
 }
 
+// GetDatapointValue takes a list of datapoints and tries to fetch them with as little
+// calls to JsonGetDatapointValue as possible.
+// The actual value is a json.RawMessage in each elements Value field.
 func (a *Client) GetDatapointValue(datapoints []int) (error, []JsonDatapointValue) {
 	var m []JsonDatapointValue
 	var r JsonResult

@@ -1,4 +1,4 @@
-package main
+package knxbaosip
 
 // makeChunks compresses a list of integers to a list of consecutive chunks
 // ({base,count} of consecutive elements).
