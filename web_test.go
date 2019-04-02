@@ -10,8 +10,9 @@ import (
 )
 
 var ApiTestUrlMap = map[string]string{
-	"/baos/getServerItem":        "testdata/results/getServerItem.json",
-	"/baos/getDescriptionString": "testdata/results/getDescriptionString-1-33.json",
+	"/baos/getServerItem":           "testdata/results/getServerItem.json",
+	"/baos/getDescriptionString":    "testdata/results/getDescriptionString-1-33.json",
+	"/baos/getDatapointDescription": "testdata/results/getDataPointDescription-1-33.json",
 }
 
 func makeTestServer() *httptest.Server {
@@ -37,6 +38,18 @@ func TestGetServerItem(t *testing.T) {
 	_, si := knx.GetServerItem()
 	got := si.ApplicationId
 	wanted := 1801
+	if got != wanted {
+		t.Errorf("got %d, wanted %d", got, wanted)
+	}
+}
+
+func TestGetDatapointDescription(t *testing.T) {
+	tearDown, knx := setup(t)
+	defer tearDown(t)
+	dps := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33}
+	_, ds := knx.GetDatapointDescription(dps)
+	got := ds[7].DatapointType
+	wanted := 3
 	if got != wanted {
 		t.Errorf("got %d, wanted %d", got, wanted)
 	}
