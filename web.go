@@ -147,7 +147,7 @@ func (a *Client) JsonGetDatapointDescription(datapoint int, count int) (error, J
 // GetDatapointDescription takes a list of datapoints and tries to fetch them with as little
 // calls to JsonGetDatapointDescription as possible.
 func (a *Client) GetDatapointDescription(datapoints []int) (error, []JsonDatapointDescription) {
-	var m, t []JsonDatapointDescription
+	var m []JsonDatapointDescription
 	var r JsonResult
 	var err error
 	for _, chunk := range makeChunks(datapoints) {
@@ -155,6 +155,7 @@ func (a *Client) GetDatapointDescription(datapoints []int) (error, []JsonDatapoi
 		if err != nil {
 			return err, m
 		}
+		var t []JsonDatapointDescription
 		err = json.Unmarshal(r.Data, &t)
 		if err != nil {
 			return fmt.Errorf("Error decoding data from message: %s", err), m
@@ -188,7 +189,7 @@ func (a *Client) JsonGetDescriptionString(datapoint int, count int) (error, Json
 // GetDescriptionString takes a list of datapoints and tries to fetch them with as little
 // calls to JsonGetDescriptionString as possible.
 func (a *Client) GetDescriptionString(datapoints []int) (error, []JsonDescriptionString) {
-	var m, t []JsonDescriptionString
+	var m []JsonDescriptionString
 	var r JsonResult
 	var err error
 	for _, chunk := range makeChunks(datapoints) {
@@ -196,6 +197,7 @@ func (a *Client) GetDescriptionString(datapoints []int) (error, []JsonDescriptio
 		if err != nil {
 			return err, m
 		}
+		var t []JsonDescriptionString
 		err = json.Unmarshal(r.Data, &t)
 		if err != nil {
 			return fmt.Errorf("Error decoding data from message: %s", err), m
