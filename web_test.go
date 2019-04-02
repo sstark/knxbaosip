@@ -10,7 +10,8 @@ import (
 )
 
 var ApiTestUrlMap = map[string]string{
-	"/baos/getServerItem": "testdata/results/getServerItem.json",
+	"/baos/getServerItem":        "testdata/results/getServerItem.json",
+	"/baos/getDescriptionString": "testdata/results/getDescriptionString-1-33.json",
 }
 
 func makeTestServer() *httptest.Server {
@@ -24,10 +25,31 @@ func makeTestServer() *httptest.Server {
 	}))
 }
 
-func TestApi(t *testing.T) {
+func setup(t *testing.T) (func(t *testing.T), *Client) {
 	log.SetFlags(log.Ldate | log.Ltime | log.Llongfile)
 	ts := makeTestServer()
-	defer ts.Close()
-	knx := NewClient(ts.URL + "/baos/")
-	knx.JsonGetServerItem()
+	return func(t *testing.T) { ts.Close() }, NewClient(ts.URL + "/baos/")
+}
+
+func TestGetServerItem(t *testing.T) {
+	tearDown, knx := setup(t)
+	defer tearDown(t)
+	_, si := knx.GetServerItem()
+	got := si.ApplicationId
+	wanted := 1801
+	if got != wanted {
+		t.Errorf("got %d, wanted %d", got, wanted)
+	}
+}
+
+func TestGetDescriptionString(t *testing.T) {
+	tearDown, knx := setup(t)
+	defer tearDown(t)
+	dps := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33}
+	_, ds := knx.GetDescriptionString(dps)
+	got := ds[10].Description
+	wanted := "Jalo. N4.015 Auf/Ab"
+	if got != wanted {
+		t.Errorf("got %s, wanted %s", got, wanted)
+	}
 }
