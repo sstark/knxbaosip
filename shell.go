@@ -15,7 +15,7 @@ func main() {
 	}
 	fmt.Printf("%s fw:%d sn:%v\n", knx.Url, si.FirmwareVersion, si.SerialNumber)
 
-	err, dpd := knx.GetDatapointDescription([]int{700, 701, 711, 712, 720, 721, 722, 234324})
+	err, dpd := knx.GetDatapointDescription([]int{700, 701, 711, 712, 720, 721, 722})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -23,5 +23,11 @@ func main() {
 		fmt.Printf("%d:%d\n", d.Datapoint, d.DatapointType)
 	}
 
-	//	println(knx.JsonGetDescriptionString(711))
+	err, ds := knx.GetDescriptionString([]int{700, 701, 711, 712, 720, 721, 722})
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, d := range ds {
+		fmt.Printf("%d:%s\n", d.Datapoint, d.Description)
+	}
 }

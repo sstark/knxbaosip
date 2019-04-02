@@ -155,6 +155,43 @@ func (a *Client) GetDatapointDescription(datapoints []int) (error, []JsonDatapoi
 	return nil, m
 }
 
-func (a *Client) JsonGetDescriptionString(datapoint int) (error, string) {
-	return a.ApiGetJson(fmt.Sprintf("getDescriptionString?DatapointStart=%d&DatapointCount=1", datapoint))
+// JsonGetDescriptionString fetches <count> consecutive datapoints from the server
+// and returns the raw json data.
+func (a *Client) JsonGetDescriptionString(datapoint int, count int) (error, JsonResult) {
+	var m JsonResult
+	var err error
+	uri := fmt.Sprintf("getDescriptionString?DatapointStart=%d&DatapointCount=%d", datapoint, count)
+	err, out := a.ApiGetJson(uri)
+	if err != nil {
+		return err, m
+	}
+	err = json.Unmarshal([]byte(out), &m)
+	if err != nil {
+		return fmt.Errorf("Error decoding message: %s", err), m
+	}
+	if m.Result == false {
+		return fmt.Errorf("%s: BAOS error: %s", uri, m.Error), m
+
+	}
+	return nil, m
+}
+
+// GetDescriptionString takes a list of datapoints and tries to fetch them with as little
+// calls to JsonGetDescriptionString as possible.
+func (a *Client) GetDescriptionString(datapoints []int) (error, []JsonDescriptionString) {
+	var m, t []JsonDescriptionString
+	var r JsonResult
+	var err error
+	for _, chunk := range makeChunks(datapoints) {
+		err, r = a.JsonGetDescriptionString(chunk[0], chunk[1])
+		if err != nil {
+			return err, m
+		}
+		err = json.Unmarshal(r.Data, &t)
+		if err != nil {
+			return fmt.Errorf("Error decoding data from message: %s", err), m
+		}
+		m = append(m, t...)
+	}
+	return nil, m
 }
