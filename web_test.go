@@ -11,7 +11,7 @@ import (
 
 var ApiTestUrlMap = map[string]string{
 	"/baos/getServerItem?ItemStart=1&ItemCount=18":                               "testdata/results/getServerItem.json",
-	"/baos/getDatapointDescription?DatapointStart=1&DatapointCount=33":           "testdata/results/getDataPointDescription-1-33.json",
+	"/baos/getDatapointDescription?DatapointStart=1&DatapointCount=33":           "testdata/results/getDatapointDescription-1-33.json",
 	"/baos/getDescriptionString?DatapointStart=1&DatapointCount=33":              "testdata/results/getDescriptionString-1-33.json",
 	"/baos/getDescriptionString?DatapointStart=543&DatapointCount=3":             "testdata/results/invalidParam.json",
 	"/baos/getDatapointValue?DatapointStart=711&DatapointCount=1&Format=Default": "testdata/results/getDatapointValue-711.json",
