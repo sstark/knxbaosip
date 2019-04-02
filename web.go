@@ -83,7 +83,6 @@ func (a *Client) ApiGetJson(serviceQuery string) string {
 func (a *Client) JsonGetServerItem() JsonResult {
 	var m JsonResult
 	out := a.ApiGetJson(fmt.Sprintf("getServerItem?ItemStart=1&ItemCount=%d", GetServerItemCount))
-	fmt.Println(out)
 	j := []byte(out)
 	err := json.Unmarshal(j, &m)
 	if err != nil {
