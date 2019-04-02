@@ -1,0 +1,9 @@
+{
+"Result":true,
+"Service":"GetDatapointValue",
+"Data":
+[
+{"Datapoint": 711, "Format": "DPT8", "Length": 2, "State": 24, "Value": 3203},
+{"Datapoint": 712, "Format": "DPT8", "Length": 2, "State": 0, "Value": 0}
+]
+}

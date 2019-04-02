@@ -1,0 +1,10 @@
+{
+"Result":true,
+"Service":"GetDatapointValue",
+"Data":
+[
+{"Datapoint": 720, "Format": "DPT14", "Length": 4, "State": 0, "Value": 0.000000},
+{"Datapoint": 721, "Format": "DPT14", "Length": 4, "State": 0, "Value": 0.000000},
+{"Datapoint": 722, "Format": "DPT1", "Length": 1, "State": 0, "Value": false}
+]
+}

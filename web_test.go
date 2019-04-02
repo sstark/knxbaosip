@@ -15,6 +15,9 @@ var ApiTestUrlMap = map[string]string{
 	"/baos/getDescriptionString?DatapointStart=1&DatapointCount=33":              "testdata/results/getDescriptionString-1-33.json",
 	"/baos/getDescriptionString?DatapointStart=543&DatapointCount=3":             "testdata/results/invalidParam.json",
 	"/baos/getDatapointValue?DatapointStart=711&DatapointCount=1&Format=Default": "testdata/results/getDatapointValue-711.json",
+	"/baos/getDatapointValue?DatapointStart=700&DatapointCount=2&Format=Default": "testdata/results/getDatapointValue-700-701.json",
+	"/baos/getDatapointValue?DatapointStart=711&DatapointCount=2&Format=Default": "testdata/results/getDatapointValue-711-712.json",
+	"/baos/getDatapointValue?DatapointStart=720&DatapointCount=3&Format=Default": "testdata/results/getDatapointValue-720-722.json",
 }
 
 func makeTestServer() *httptest.Server {
@@ -90,5 +93,21 @@ func TestGetDatapointValue(t *testing.T) {
 	wanted := "3198"
 	if got != wanted {
 		t.Errorf("got %s, wanted %s", got, wanted)
+	}
+}
+
+func TestGetDatapointValueMultiple(t *testing.T) {
+	tearDown, knx := setup(t)
+	defer tearDown(t)
+	dps := []int{700, 701, 711, 712, 720, 721, 722}
+	_, dpv := knx.GetDatapointValue(dps)
+	out := []string{"0", "0.000000", "3203", "0", "0.000000", "0.000000", "false"}
+
+	for i, v := range dpv {
+		got := string(v.Value)
+		wanted := out[i]
+		if got != wanted {
+			t.Errorf("got %s, wanted %s", got, wanted)
+		}
 	}
 }
