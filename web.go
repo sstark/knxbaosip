@@ -20,6 +20,7 @@ type Client struct {
 type JsonResult struct {
 	Result  bool
 	Service string
+	Error   string
 	Data    json.RawMessage
 }
 
