@@ -20,11 +20,12 @@ func makeTestServer() *httptest.Server {
 			log.Fatal(err)
 			return
 		}
-		fmt.Fprintln(w, out)
+		fmt.Fprint(w, string(out))
 	}))
 }
 
 func TestApi(t *testing.T) {
+	log.SetFlags(log.Ldate | log.Ltime | log.Llongfile)
 	ts := makeTestServer()
 	defer ts.Close()
 	knx := NewClient(ts.URL + "/baos/")

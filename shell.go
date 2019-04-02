@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
+	"log"
 )
 
 func main() {
+	log.SetFlags(log.Ldate | log.Ltime | log.Llongfile)
 	knx := NewClient("")
 	si := knx.GetServerItem()
 	fmt.Printf("%s fw:%d sn:%v\n", knx.Url, si.FirmwareVersion, si.SerialNumber)
