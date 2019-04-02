@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -67,67 +66,87 @@ func NewClient(url string) *Client {
 	return &Client{Url: apiUrl}
 }
 
-func (a *Client) ApiGetJson(serviceQuery string) string {
+func (a *Client) ApiGetJson(serviceQuery string) (error, string) {
 	getPath := fmt.Sprintf("%s%s", a.Url, serviceQuery)
 	res, err := http.Get(getPath)
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("http GET error: %s", err), ""
 	}
 	result, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("http read error: %s", err), ""
 	}
-	return string(result)
+	return nil, string(result)
 }
 
-func (a *Client) JsonGetServerItem() JsonResult {
+func (a *Client) JsonGetServerItem() (error, JsonResult) {
 	var m JsonResult
-	out := a.ApiGetJson(fmt.Sprintf("getServerItem?ItemStart=1&ItemCount=%d", GetServerItemCount))
-	j := []byte(out)
-	err := json.Unmarshal(j, &m)
+	var err error
+	err, out := a.ApiGetJson(fmt.Sprintf("getServerItem?ItemStart=1&ItemCount=%d", GetServerItemCount))
 	if err != nil {
-		log.Fatal(err)
+		return err, m
 	}
-	return m
+	j := []byte(out)
+	err = json.Unmarshal(j, &m)
+	if err != nil {
+		return fmt.Errorf("Error decoding message: %s", err), m
+	}
+	return nil, m
 }
 
-func (a *Client) GetServerItem() JsonServerItem {
+func (a *Client) GetServerItem() (error, JsonServerItem) {
+	var t JsonResult
 	var m JsonServerItem
-	err := json.Unmarshal(a.JsonGetServerItem().Data, &m)
+	var err error
+	err, t = a.JsonGetServerItem()
 	if err != nil {
-		log.Fatal(err)
+		return err, m
 	}
-	return m
+	err = json.Unmarshal(t.Data, &m)
+	if err != nil {
+		return fmt.Errorf("Error decoding data from message: %s", err), m
+	}
+	return nil, m
 }
 
 // JsonGetDatapointDescription fetches <count> consecutive datapoints from the server
 // and returns the raw json data.
-func (a *Client) JsonGetDatapointDescription(datapoint int, count int) JsonResult {
+func (a *Client) JsonGetDatapointDescription(datapoint int, count int) (error, JsonResult) {
 	var m JsonResult
-	out := a.ApiGetJson(fmt.Sprintf("getDatapointDescription?DatapointStart=%d&DatapointCount=%d", datapoint, count))
-	j := []byte(out)
-	err := json.Unmarshal(j, &m)
+	var err error
+	err, out := a.ApiGetJson(fmt.Sprintf("getDatapointDescription?DatapointStart=%d&DatapointCount=%d", datapoint, count))
 	if err != nil {
-		log.Fatal(err)
+		return err, m
 	}
-	return m
+	j := []byte(out)
+	err = json.Unmarshal(j, &m)
+	if err != nil {
+		return fmt.Errorf("Error decoding message: %s", err), m
+	}
+	return nil, m
 }
 
 // GetDatapointDescription takes a list of datapoints and tries to fetch them with as little
 // calls to JsonGetDatapointDescription as possible.
-func (a *Client) GetDatapointDescription(datapoints []int) []JsonDatapointDescription {
+func (a *Client) GetDatapointDescription(datapoints []int) (error, []JsonDatapointDescription) {
 	var m, t []JsonDatapointDescription
+	var r JsonResult
+	var err error
 	for _, chunk := range makeChunks(datapoints) {
-		err := json.Unmarshal(a.JsonGetDatapointDescription(chunk[0], chunk[1]).Data, &t)
+		err, r = a.JsonGetDatapointDescription(chunk[0], chunk[1])
 		if err != nil {
-			log.Fatal(err)
+			return err, m
+		}
+		err = json.Unmarshal(r.Data, &t)
+		if err != nil {
+			return fmt.Errorf("Error decoding data from message: %s", err), m
 		}
 		m = append(m, t...)
 	}
-	return m
+	return nil, m
 }
 
-func (a *Client) JsonGetDescriptionString(datapoint int) string {
+func (a *Client) JsonGetDescriptionString(datapoint int) (error, string) {
 	return a.ApiGetJson(fmt.Sprintf("getDescriptionString?DatapointStart=%d&DatapointCount=1", datapoint))
 }
