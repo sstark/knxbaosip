@@ -10,14 +10,14 @@ import (
 )
 
 var ApiTestUrlMap = map[string]string{
-	"/baos/getServerItem":           "testdata/results/getServerItem.json",
-	"/baos/getDescriptionString":    "testdata/results/getDescriptionString-1-33.json",
-	"/baos/getDatapointDescription": "testdata/results/getDataPointDescription-1-33.json",
+	"/baos/getServerItem?ItemStart=1&ItemCount=18":                     "testdata/results/getServerItem.json",
+	"/baos/getDatapointDescription?DatapointStart=1&DatapointCount=33": "testdata/results/getDataPointDescription-1-33.json",
+	"/baos/getDescriptionString?DatapointStart=1&DatapointCount=33":    "testdata/results/getDescriptionString-1-33.json",
 }
 
 func makeTestServer() *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		out, err := ioutil.ReadFile(ApiTestUrlMap[r.URL.Path])
+		out, err := ioutil.ReadFile(ApiTestUrlMap[r.URL.RequestURI()])
 		if err != nil {
 			log.Fatal(err)
 			return
