@@ -30,4 +30,12 @@ func main() {
 	for _, d := range ds {
 		fmt.Printf("%d:%s\n", d.Datapoint, d.Description)
 	}
+
+	err, dpv := knx.GetDatapointValue([]int{700, 701, 711, 712, 720, 721, 722})
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, d := range dpv {
+		fmt.Printf("%d(%s):%s\n", d.Datapoint, d.Format, string(d.Value))
+	}
 }

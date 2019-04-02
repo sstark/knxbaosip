@@ -56,6 +56,15 @@ type JsonDescriptionString struct {
 	Description string
 }
 
+type JsonDatapointValue struct {
+	Datapoint int
+	Format    string
+	Length    int
+	State     int
+	// depends on Format
+	Value json.RawMessage
+}
+
 func NewClient(url string) *Client {
 	var apiUrl string
 	if url == "" {
@@ -187,6 +196,45 @@ func (a *Client) GetDescriptionString(datapoints []int) (error, []JsonDescriptio
 		if err != nil {
 			return err, m
 		}
+		err = json.Unmarshal(r.Data, &t)
+		if err != nil {
+			return fmt.Errorf("Error decoding data from message: %s", err), m
+		}
+		m = append(m, t...)
+	}
+	return nil, m
+}
+
+func (a *Client) JsonGetDatapointValue(datapoint int, count int) (error, JsonResult) {
+	var m JsonResult
+	var err error
+	uri := fmt.Sprintf("getDatapointValue?DatapointStart=%d&DatapointCount=%d&Format=Default", datapoint, count)
+	err, out := a.ApiGetJson(uri)
+	if err != nil {
+		return err, m
+	}
+	err = json.Unmarshal([]byte(out), &m)
+	if err != nil {
+		return fmt.Errorf("Error decoding message: %s", err), m
+	}
+	if m.Result == false {
+		return fmt.Errorf("%s: BAOS error: %s", uri, m.Error), m
+
+	}
+	return nil, m
+}
+
+func (a *Client) GetDatapointValue(datapoints []int) (error, []JsonDatapointValue) {
+	var m []JsonDatapointValue
+	var r JsonResult
+	var err error
+	for _, chunk := range makeChunks(datapoints) {
+		err, r = a.JsonGetDatapointValue(chunk[0], chunk[1])
+		if err != nil {
+			return err, m
+		}
+		// this needs to be reset on every iteration
+		var t []JsonDatapointValue
 		err = json.Unmarshal(r.Data, &t)
 		if err != nil {
 			return fmt.Errorf("Error decoding data from message: %s", err), m
