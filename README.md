@@ -16,46 +16,105 @@ Original API documentation:
 
   - https://www.weinzierl.de/images/download/documents/baos/KNX_IP_BAOS_WebServices.pdf
 
-Notes
-=====
+Currently only getting values is supporting, not setting.
 
-low level functions
+The values (as returned by GetDatapointValue()) are not cast to a certain data
+type. Instead they are returned as a json.RawMessage. You can simply cast them
+to string or use your own conversion for now. Maybe later some higher level
+methods will be added.
+
+Example
+=======
+
+
+
+Interface
+=========
+
+    func NewClient(url string) *Client
+
+Low Level Functions
 -------------------
 
-registerDatapoint(int, type)
+    func (a *Client) ApiGetJson(serviceQuery string) (error, string)
 
-get...json  (raw json)
-get...raw   (raw bytes)
-get...dpt   (carries dpt type in struct)
+    func (a *Client) JsonGetDatapointDescription(datapoint int, count int) (error, JsonResult)
+        JsonGetDatapointDescription fetches <count> consecutive datapoints from
+        the server and returns the raw json data.
+
+    func (a *Client) JsonGetDatapointValue(datapoint int, count int) (error, JsonResult)
+
+    func (a *Client) JsonGetDescriptionString(datapoint int, count int) (error, JsonResult)
+        JsonGetDescriptionString fetches <count> consecutive datapoints from the
+        server and returns the raw json data.
+
+    func (a *Client) JsonGetServerItem() (error, JsonResult)
 
 
-get...dpt:
-
-  - get description first
-  - then use json api call corresponding to dpt type
-  - return struct with
-    - original json
-    - go api type corresponding to dpt type
-    - methode to coerce type of variable
-
-mid level functions
+Mid Level Functions
 -------------------
 
-getAs...int (coerced getter)
+    func (a *Client) GetDatapointDescription(datapoints []int) (error, []JsonDatapointDescription)
+        GetDatapointDescription takes a list of datapoints and tries to fetch
+        them with as little calls to JsonGetDatapointDescription as possible.
 
-getAs...int
-getAs...float
-getAs...date
-getAs...string
+    func (a *Client) GetDatapointValue(datapoints []int) (error, []JsonDatapointValue)
 
-  - forces value into given type
-  - warns if embedded dpt type does not match
+    func (a *Client) GetDescriptionString(datapoints []int) (error, []JsonDescriptionString)
+        GetDescriptionString takes a list of datapoints and tries to fetch them
+        with as little calls to JsonGetDescriptionString as possible.
+
+    func (a *Client) GetServerItem() (error, JsonServerItem)
 
 
-high level functions
---------------------
+Types
+-----
 
-showDescription()
-set()
-toggle()
+    type JsonDatapointDescription struct {
+        Datapoint          int
+        ValueType          int
+        ConfigurationFlags int
+        DatapointType      int
+    }
+
+    type JsonDatapointValue struct {
+        Datapoint int
+        Format    string
+        Length    int
+        State     int
+        Value json.RawMessage
+    }
+
+    type JsonDescriptionString struct {
+        Datapoint   int
+        Description string
+    }
+
+    type JsonResult struct {
+        Result  bool
+        Service string
+        Error   string
+        Data    json.RawMessage
+    }
+
+    type JsonServerItem struct {
+        HardwareType               []int
+        HardwareVersion            int
+        FirmwareVersion            int
+        KnxManufacturerCodeDev     int
+        KnxManufacturerCodeApp     int
+        ApplicationId              int
+        ApplicationVersion         int
+        SerialNumber               []int
+        TimeSinceReset             int
+        BusConnectionState         int
+        MaximalBufferSize          int
+        LengthOfDescriptionString  int
+        Baudrate                   int
+        CurrentBufferSize          int
+        ProgrammingMode            int
+        ProtocolVersion            int
+        IndicationSending          int
+        ProtocolVersionWebServices int
+    }
 
