@@ -104,7 +104,8 @@ func (a *Client) GetServerItem() JsonServerItem {
 // and returns the raw json data.
 func (a *Client) JsonGetDatapointDescription(datapoint int, count int) JsonResult {
 	var m JsonResult
-	j := []byte(a.ApiGetJson(fmt.Sprintf("getDatapointDescription?DatapointStart=%d&DatapointCount=%d", datapoint, count)))
+	out := a.ApiGetJson(fmt.Sprintf("getDatapointDescription?DatapointStart=%d&DatapointCount=%d", datapoint, count))
+	j := []byte(out)
 	err := json.Unmarshal(j, &m)
 	if err != nil {
 		log.Fatal(err)
