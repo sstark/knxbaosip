@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"strings"
 )
 
 func main() {
@@ -13,29 +14,21 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("%s fw:%d sn:%v\n", knx.Url, si.FirmwareVersion, si.SerialNumber)
+	sn := strings.Trim(strings.Join(strings.Fields(fmt.Sprint(si.SerialNumber)), "."), "[]")
+	fmt.Printf("%s fw:%d sn:%v\n", knx.Url, si.FirmwareVersion, sn)
 
-	err, dpd := knx.GetDatapointDescription([]int{700, 701, 711, 712, 720, 721, 722})
+	datapoints := []int{700, 701, 711, 712, 720, 721, 722}
+
+	err, ds := knx.GetDescriptionString(datapoints)
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, d := range dpd {
-		fmt.Printf("%d:%d\n", d.Datapoint, d.DatapointType)
-	}
-
-	err, ds := knx.GetDescriptionString([]int{700, 701, 711, 712, 720, 721, 722})
+	err, dpv := knx.GetDatapointValue(datapoints)
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, d := range ds {
-		fmt.Printf("%d:%s\n", d.Datapoint, d.Description)
-	}
-
-	err, dpv := knx.GetDatapointValue([]int{700, 701, 711, 712, 720, 721, 722})
-	if err != nil {
-		log.Fatal(err)
-	}
-	for _, d := range dpv {
-		fmt.Printf("%d(%s):%s\n", d.Datapoint, d.Format, string(d.Value))
+	for i, d := range dpv {
+		desc := ds[i].Description
+		fmt.Printf("%5d %5s \"%s\": %s\n", d.Datapoint, d.Format, desc, string(d.Value))
 	}
 }
