@@ -23,8 +23,10 @@ type. Instead they are returned as a json.RawMessage. You can simply cast them
 to string or use your own conversion for now. Maybe later some higher level
 methods will be added.
 
+
 Example
 =======
+
 
 
 
@@ -32,23 +34,32 @@ Interface
 =========
 
     func NewClient(url string) *Client
+        NewClient creates a new client object using the given URL to access the
+        knx baos ip gateway.
+
 
 Low Level Functions
 -------------------
 
     func (a *Client) ApiGetJson(serviceQuery string) (error, string)
+        ApiGetJson queries the baos gateway with a given service query and
+        returns the result as a string
 
     func (a *Client) JsonGetDatapointDescription(datapoint int, count int) (error, JsonResult)
         JsonGetDatapointDescription fetches <count> consecutive datapoints from
         the server and returns the raw json data.
 
     func (a *Client) JsonGetDatapointValue(datapoint int, count int) (error, JsonResult)
+        JsonGetDatapointValue fetches <count> consecutive datapoints from the
+        server and returns the raw json data.
 
     func (a *Client) JsonGetDescriptionString(datapoint int, count int) (error, JsonResult)
         JsonGetDescriptionString fetches <count> consecutive datapoints from the
         server and returns the raw json data.
 
     func (a *Client) JsonGetServerItem() (error, JsonResult)
+        JsonGetServerItem returns some basic gateway information as a generic
+        json result object
 
 
 Mid Level Functions
@@ -59,12 +70,17 @@ Mid Level Functions
         them with as little calls to JsonGetDatapointDescription as possible.
 
     func (a *Client) GetDatapointValue(datapoints []int) (error, []JsonDatapointValue)
+        GetDatapointValue takes a list of datapoints and tries to fetch them
+        with as little calls to JsonGetDatapointValue as possible. The actual
+        value is a json.RawMessage in each elements Value field.
 
     func (a *Client) GetDescriptionString(datapoints []int) (error, []JsonDescriptionString)
         GetDescriptionString takes a list of datapoints and tries to fetch them
         with as little calls to JsonGetDescriptionString as possible.
 
     func (a *Client) GetServerItem() (error, JsonServerItem)
+        GetServerItem returns some basic gateway information as a specific
+        result object
 
 
 Types
