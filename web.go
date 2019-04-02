@@ -83,7 +83,8 @@ func (a *Client) ApiGetJson(serviceQuery string) (error, string) {
 func (a *Client) JsonGetServerItem() (error, JsonResult) {
 	var m JsonResult
 	var err error
-	err, out := a.ApiGetJson(fmt.Sprintf("getServerItem?ItemStart=1&ItemCount=%d", GetServerItemCount))
+	uri := fmt.Sprintf("getServerItem?ItemStart=1&ItemCount=%d", GetServerItemCount)
+	err, out := a.ApiGetJson(uri)
 	if err != nil {
 		return err, m
 	}
@@ -91,6 +92,9 @@ func (a *Client) JsonGetServerItem() (error, JsonResult) {
 	err = json.Unmarshal(j, &m)
 	if err != nil {
 		return fmt.Errorf("Error decoding message: %s", err), m
+	}
+	if m.Result == false {
+		return fmt.Errorf("%s: BAOS error: %s", uri, m.Error), m
 	}
 	return nil, m
 }
@@ -115,7 +119,8 @@ func (a *Client) GetServerItem() (error, JsonServerItem) {
 func (a *Client) JsonGetDatapointDescription(datapoint int, count int) (error, JsonResult) {
 	var m JsonResult
 	var err error
-	err, out := a.ApiGetJson(fmt.Sprintf("getDatapointDescription?DatapointStart=%d&DatapointCount=%d", datapoint, count))
+	uri := fmt.Sprintf("getDatapointDescription?DatapointStart=%d&DatapointCount=%d", datapoint, count)
+	err, out := a.ApiGetJson(uri)
 	if err != nil {
 		return err, m
 	}
@@ -123,6 +128,9 @@ func (a *Client) JsonGetDatapointDescription(datapoint int, count int) (error, J
 	err = json.Unmarshal(j, &m)
 	if err != nil {
 		return fmt.Errorf("Error decoding message: %s", err), m
+	}
+	if m.Result == false {
+		return fmt.Errorf("%s: BAOS error: %s", uri, m.Error), m
 	}
 	return nil, m
 }
