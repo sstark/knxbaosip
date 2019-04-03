@@ -27,7 +27,7 @@ methods will be added.
 Example
 =======
 
-
+See https://github.com/sstark/kxsh for an example using this package.
 
 
 Interface
