@@ -78,19 +78,19 @@ func NewClient(url string) *Client {
 }
 
 // ApiGetJson queries the baos gateway with a given service query and returns
-// the result as a string
-func (a *Client) ApiGetJson(serviceQuery string) (error, string) {
+// the result as a slice of bytes
+func (a *Client) ApiGetJson(serviceQuery string) (error, []byte) {
 	getPath := fmt.Sprintf("%s%s", a.Url, serviceQuery)
 	res, err := http.Get(getPath)
 	if err != nil {
-		return fmt.Errorf("http GET error: %s", err), ""
+		return fmt.Errorf("http GET error: %s", err), nil
 	}
 	result, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
 	if err != nil {
-		return fmt.Errorf("http read error: %s", err), ""
+		return fmt.Errorf("http read error: %s", err), nil
 	}
-	return nil, string(result)
+	return nil, result
 }
 
 // JsonGetServerItem returns some basic gateway information as a generic json
@@ -103,8 +103,7 @@ func (a *Client) JsonGetServerItem() (error, JsonResult) {
 	if err != nil {
 		return err, m
 	}
-	j := []byte(out)
-	err = json.Unmarshal(j, &m)
+	err = json.Unmarshal(out, &m)
 	if err != nil {
 		return fmt.Errorf("Error decoding message: %s", err), m
 	}
@@ -141,8 +140,7 @@ func (a *Client) JsonGetDatapointDescription(datapoint int, count int) (error, J
 	if err != nil {
 		return err, m
 	}
-	j := []byte(out)
-	err = json.Unmarshal(j, &m)
+	err = json.Unmarshal(out, &m)
 	if err != nil {
 		return fmt.Errorf("Error decoding message: %s", err), m
 	}
@@ -183,7 +181,7 @@ func (a *Client) JsonGetDescriptionString(datapoint int, count int) (error, Json
 	if err != nil {
 		return err, m
 	}
-	err = json.Unmarshal([]byte(out), &m)
+	err = json.Unmarshal(out, &m)
 	if err != nil {
 		return fmt.Errorf("Error decoding message: %s", err), m
 	}
@@ -225,7 +223,7 @@ func (a *Client) JsonGetDatapointValue(datapoint int, count int) (error, JsonRes
 	if err != nil {
 		return err, m
 	}
-	err = json.Unmarshal([]byte(out), &m)
+	err = json.Unmarshal(out, &m)
 	if err != nil {
 		return fmt.Errorf("Error decoding message: %s", err), m
 	}

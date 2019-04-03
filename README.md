@@ -41,9 +41,9 @@ Interface
 Low Level Functions
 -------------------
 
-    func (a *Client) ApiGetJson(serviceQuery string) (error, string)
+    func (a *Client) ApiGetJson(serviceQuery string) (error, []byte)
         ApiGetJson queries the baos gateway with a given service query and
-        returns the result as a string
+        returns the result as a slice of bytes
 
     func (a *Client) JsonGetDatapointDescription(datapoint int, count int) (error, JsonResult)
         JsonGetDatapointDescription fetches <count> consecutive datapoints from
