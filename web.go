@@ -2,6 +2,7 @@ package knxbaosip
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -253,6 +254,37 @@ func (a *Client) GetDatapointValue(datapoints []int) (error, []JsonDatapointValu
 			return fmt.Errorf("Error decoding data from message: %s", err), m
 		}
 		m = append(m, t...)
+	}
+	return nil, m
+}
+
+func (a *Client) SetDatapointValue(datapoint int, format string, value interface{}) (error, JsonResult) {
+	var m JsonResult
+	var err error
+	var uri string
+	switch val := value.(type) {
+	case string:
+		switch format {
+		case "DPT1":
+			uri = fmt.Sprintf("setDatapointValue?Datapoint=%d&Format=%s&Length=1&Value=%s", datapoint, format, val)
+			fmt.Println(uri)
+		default:
+			return errors.New("unsupported format"), m
+		}
+	default:
+		return errors.New("unsupported value type"), m
+	}
+	err, out := a.ApiGetJson(uri)
+	if err != nil {
+		return err, m
+	}
+	err = json.Unmarshal(out, &m)
+	if err != nil {
+		return fmt.Errorf("Error decoding message: %s", err), m
+	}
+	if m.Result == false {
+		return fmt.Errorf("%s: BAOS error: %s", uri, m.Error), m
+
 	}
 	return nil, m
 }
