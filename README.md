@@ -82,6 +82,10 @@ Mid Level Functions
         GetServerItem returns some basic gateway information as a specific
         result object
 
+    func (a *Client) SetDatapointValue(datapoint int, format int, value interface{}) (error, JsonResult)
+        SetDatapointValue sets a given datapoint to the given value. The type of
+        the value depends on the supplied DPT format.
+
 
 Types
 -----
@@ -133,4 +137,9 @@ Types
         IndicationSending          int
         ProtocolVersionWebServices int
     }
+
+Constants
+---------
+
+DPT1 DPT2 DPT3 DPT4 DPT5 DPT6 DPT7 DPT8 DPT9 DPT10 DPT11 DPT12 DPT13 DPT14 DPT15 DPT16 DPT17 DPT18 correspond to the integer values 1 to 18.
 
