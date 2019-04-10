@@ -9,9 +9,7 @@ import (
 )
 
 const (
-	defaultUrl         string = "http://localhost:8888/baos/"
-	GetServerItemCount int    = 18
-	_                  int    = iota
+	_ int = iota
 	DPT1
 	DPT2
 	DPT3
@@ -30,6 +28,8 @@ const (
 	DPT16
 	DPT17
 	DPT18
+	defaultUrl         string = "http://localhost:8888/baos/"
+	GetServerItemCount int    = 18
 )
 
 type Client struct {
