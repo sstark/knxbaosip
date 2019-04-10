@@ -16,7 +16,7 @@ Original API documentation:
 
   - https://www.weinzierl.de/images/download/documents/baos/KNX_IP_BAOS_WebServices.pdf
 
-Currently only getting values is supporting, not setting.
+For setting, currently only DPT1 and DPT5 are supported.
 
 The values (as returned by GetDatapointValue()) are not cast to a certain data
 type. Instead they are returned as a json.RawMessage. You can simply cast them
