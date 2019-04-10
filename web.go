@@ -11,6 +11,25 @@ import (
 const (
 	defaultUrl         string = "http://localhost:8888/baos/"
 	GetServerItemCount int    = 18
+	_                  int    = iota
+	DPT1
+	DPT2
+	DPT3
+	DPT4
+	DPT5
+	DPT6
+	DPT7
+	DPT8
+	DPT9
+	DPT10
+	DPT11
+	DPT12
+	DPT13
+	DPT14
+	DPT15
+	DPT16
+	DPT17
+	DPT18
 )
 
 type Client struct {
@@ -258,22 +277,31 @@ func (a *Client) GetDatapointValue(datapoints []int) (error, []JsonDatapointValu
 	return nil, m
 }
 
-func (a *Client) SetDatapointValue(datapoint int, format string, value interface{}) (error, JsonResult) {
+// SetDatapointValue sets a given datapoint to the given value. The type of the
+// value depends on the supplied DPT format.
+func (a *Client) SetDatapointValue(datapoint int, format int, value interface{}) (error, JsonResult) {
 	var m JsonResult
 	var err error
 	var uri string
 	switch val := value.(type) {
 	case string:
 		switch format {
-		case "DPT1":
-			uri = fmt.Sprintf("setDatapointValue?Datapoint=%d&Format=%s&Length=1&Value=%s", datapoint, format, val)
-			fmt.Println(uri)
+		case DPT1:
+			uri = fmt.Sprintf("setDatapointValue?Datapoint=%d&Format=DPT%d&Length=1&Value=%s", datapoint, format, val)
 		default:
-			return errors.New("unsupported format"), m
+			return errors.New("unsupported DPT format"), m
+		}
+	case int:
+		switch format {
+		case DPT5:
+			uri = fmt.Sprintf("setDatapointValue?Datapoint=%d&Format=DPT%d&Length=1&Value=%d", datapoint, format, val)
+		default:
+			return errors.New("unsupported DPT format"), m
 		}
 	default:
 		return errors.New("unsupported value type"), m
 	}
+	fmt.Println(uri)
 	err, out := a.ApiGetJson(uri)
 	if err != nil {
 		return err, m
