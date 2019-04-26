@@ -34,6 +34,10 @@ const (
 	GetServerItemCount int    = 18
 )
 
+var (
+	AuthError = errors.New("Authorisation required")
+)
+
 type Client struct {
 	Url    string
 	Logger *log.Logger
@@ -118,8 +122,12 @@ func (a *Client) ApiGetJson(serviceQuery string) (error, []byte) {
 	a.Debugf(getPath)
 	res, err := http.Get(getPath)
 	a.Debugf("%v", err)
+	a.Debugf("status: %s", res.Status)
 	if err != nil {
 		return fmt.Errorf("http GET error: %s", err), nil
+	}
+	if res.StatusCode == 401 {
+		return AuthError, nil
 	}
 	result, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
