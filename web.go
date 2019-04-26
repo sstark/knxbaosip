@@ -5,7 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"os"
 )
 
 const (
@@ -33,7 +35,8 @@ const (
 )
 
 type Client struct {
-	Url string
+	Url    string
+	Logger *log.Logger
 }
 
 type JsonResult struct {
@@ -89,19 +92,32 @@ type JsonDatapointValue struct {
 // baos ip gateway.
 func NewClient(url string) *Client {
 	var apiUrl string
+	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime|log.Lshortfile)
 	if url == "" {
 		apiUrl = defaultUrl
 	} else {
 		apiUrl = url
 	}
-	return &Client{Url: apiUrl}
+	return &Client{Url: apiUrl, Logger: logger}
+}
+
+func (a *Client) Debugf(format string, args ...interface{}) {
+	if os.Getenv("KNXBAOSIP_DEBUG") == "1" {
+		a.Logger.Output(2, "<DEBUG> "+fmt.Sprintf(format, args...))
+	}
+}
+
+func (a *Client) SetDebugLevel(level int) {
+	os.Setenv("KNXBAOSIP_DEBUG", fmt.Sprintf("%d", level))
 }
 
 // ApiGetJson queries the baos gateway with a given service query and returns
 // the result as a slice of bytes
 func (a *Client) ApiGetJson(serviceQuery string) (error, []byte) {
 	getPath := fmt.Sprintf("%s%s", a.Url, serviceQuery)
+	a.Debugf(getPath)
 	res, err := http.Get(getPath)
+	a.Debugf("%v", err)
 	if err != nil {
 		return fmt.Errorf("http GET error: %s", err), nil
 	}
@@ -301,7 +317,7 @@ func (a *Client) SetDatapointValue(datapoint int, format int, value interface{})
 	default:
 		return errors.New("unsupported value type"), m
 	}
-	fmt.Println(uri)
+	a.Debugf(uri)
 	err, out := a.ApiGetJson(uri)
 	if err != nil {
 		return err, m
