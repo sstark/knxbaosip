@@ -122,10 +122,10 @@ func (a *Client) ApiGetJson(serviceQuery string) (error, []byte) {
 	a.Debugf(getPath)
 	res, err := http.Get(getPath)
 	a.Debugf("%v", err)
-	a.Debugf("status: %s", res.Status)
 	if err != nil {
 		return fmt.Errorf("http GET error: %s", err), nil
 	}
+	a.Debugf("status: %s", res.Status)
 	if res.StatusCode == 401 {
 		return AuthError, nil
 	}
