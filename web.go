@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
 const (
@@ -101,6 +102,9 @@ func NewClient(url string) *Client {
 		apiUrl = defaultUrl
 	} else {
 		apiUrl = url
+	}
+	if !strings.HasSuffix(apiUrl, "/") {
+		apiUrl = apiUrl + "/"
 	}
 	return &Client{Url: apiUrl, Logger: logger}
 }
